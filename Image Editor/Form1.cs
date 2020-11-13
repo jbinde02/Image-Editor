@@ -37,6 +37,10 @@ namespace Image_Editor
             {
                 img = Image.FromFile(openFileDialog1.FileName);
                 pictureBox1.Size = img.Size;
+                if(pictureBox1.Size.Width > this.Size.Width || pictureBox1.Size.Height > this.Size.Height)
+                {
+                    this.Size = pictureBox1.Size;
+                }
                 pictureBox1.Image = img;
             }
         }
