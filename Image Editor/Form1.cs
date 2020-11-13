@@ -19,18 +19,6 @@ namespace Image_Editor
             InitializeComponent();
         }
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            this.Close();
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            this.Close();
-        }
-
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -43,6 +31,18 @@ namespace Image_Editor
                 }
                 pictureBox1.Image = img;
             }
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            img = null;
+            pictureBox1.Image = img;
+            this.Size = new Size(940, 560);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
