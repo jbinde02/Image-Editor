@@ -25,6 +25,7 @@ namespace Image_Editor
             {
                 Console.WriteLine(i);
             }
+            MessageBox.Show("hello");
             this.Close();
         }
 
