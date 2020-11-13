@@ -21,7 +21,7 @@ namespace Image_Editor
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Close();
+            img = null;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
