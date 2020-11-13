@@ -21,10 +21,6 @@ namespace Image_Editor
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            for(int i = 0; i<100; i++)
-            {
-                Console.WriteLine(i);
-            }
             this.Close();
         }
 
@@ -40,6 +36,11 @@ namespace Image_Editor
                 img = Image.FromFile(openFileDialog1.FileName);
                 pictureBox1.Image = img;
             }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
