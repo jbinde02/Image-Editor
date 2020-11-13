@@ -36,6 +36,7 @@ namespace Image_Editor
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 img = Image.FromFile(openFileDialog1.FileName);
+                pictureBox1.Size = img.Size;
                 pictureBox1.Image = img;
             }
         }
