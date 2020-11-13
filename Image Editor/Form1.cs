@@ -42,5 +42,10 @@ namespace Image_Editor
                 pictureBox1.Image = img;
             }
         }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
