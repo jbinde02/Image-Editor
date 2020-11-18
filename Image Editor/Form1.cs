@@ -108,7 +108,7 @@ namespace Image_Editor
         //Tools menubar start
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            MessageBox.Show("Test");
         }
 
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
