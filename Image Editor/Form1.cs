@@ -15,6 +15,7 @@ namespace Image_Editor
         private Bitmap originalImg = new Bitmap(1,1);
         private Bitmap img = new Bitmap(1,1);
         private string path;
+        private Point point1, point2; //Mouse locations janky solution
         private Size defaultWindowSize = new Size(940, 560);
 
         public Form1()
@@ -108,7 +109,34 @@ namespace Image_Editor
         //Tools menubar start
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Test");
+            this.Text = this.Text + " - (Crop)";
+            pictureBox1.MouseDown += new MouseEventHandler(Crop);
+        }
+
+        private void Crop(object sender, MouseEventArgs e)
+        {
+            if (!point1.IsEmpty)
+            {
+                point2 = e.Location;
+                if (point1.X > point2.X || point1.Y > point2.Y)
+                {
+                    Point temp = point1;
+                    point1 = point2;
+                    point2 = temp;
+                }
+                Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
+                img = img.Clone(rectangle, img.PixelFormat);
+                refresh();
+                pictureBox1.MouseDown -= Crop;
+                point1 = new Point(0, 0);
+                point2 = new Point(0, 0);
+                this.Text = "Image Editor";
+            }
+            else
+            {
+                point1 = e.Location;
+            }
+
         }
 
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
