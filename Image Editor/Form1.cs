@@ -11,7 +11,17 @@ using System.Windows.Forms;
 namespace Image_Editor
 {
     public partial class Form1 : Form
+
     {
+        Image img1;
+
+        Rectangle rect;
+        Point LocationXY; // starting point
+        Point LocationX1Y1; // ending point
+
+        bool mouseDown = false; //
+
+
         private Bitmap originalImg = new Bitmap(1,1);
         private Bitmap img = new Bitmap(1,1);
         private string path;
@@ -46,8 +56,8 @@ namespace Image_Editor
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bitmap imgToSave = new Bitmap(img);
-            img.Dispose();
+            Bitmap imgToSave = new Bitmap(img1);
+            img1.Dispose();
             try
             {
                 //Since file exist, delete and then resave
@@ -61,9 +71,70 @@ namespace Image_Editor
             {
                 MessageBox.Show(exception.Message);
             }
-            img = new Bitmap(imgToSave);
+            img1 = new Bitmap(imgToSave);
         }
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseDown = true;
+            LocationXY = e.Location;
+        }
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
 
+            if (mouseDown == true)
+            {
+                LocationX1Y1 = e.Location; // Current xy points
+
+                Refresh(); // Refreshes form
+            }
+
+
+        }
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+
+            if (mouseDown == true)
+            {
+                LocationX1Y1 = e.Location; // Ending xy points
+
+                mouseDown = false;
+
+                if (rect != null)
+                {
+                    Bitmap bit = new Bitmap(pictureBox1.Image, pictureBox1.Width, pictureBox1.Height);
+                    Bitmap cropImage = new Bitmap(rect.Width, rect.Height);
+                    Graphics g = Graphics.FromImage(cropImage);
+                    g.DrawImage(bit, 0, 0, rect, GraphicsUnit.Pixel);
+                    pictureBox2.Image = cropImage;
+                }
+            }
+
+
+        }
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+
+            if (rect != null)
+            {
+                e.Graphics.DrawRectangle(Pens.Blue, GetRect());
+
+            }
+            
+
+
+        }
+        private Rectangle GetRect()
+        {
+            rect = new Rectangle();
+
+            rect.X = Math.Min(LocationXY.X, LocationX1Y1.X); // X value set to min for rectangle
+            rect.Y = Math.Min(LocationXY.Y, LocationX1Y1.Y); // Y value same
+
+            rect.Width = Math.Abs(LocationXY.X - LocationX1Y1.X);
+            rect.Height = Math.Abs(LocationXY.Y - LocationX1Y1.Y);
+
+            return rect;
+        }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveFileDialog1.DefaultExt = "jpg";
@@ -157,6 +228,11 @@ namespace Image_Editor
         {
             resizePictureBox();
             refreshImage();
+        }
+
+        private void resizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
