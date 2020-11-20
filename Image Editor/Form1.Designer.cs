@@ -48,6 +48,11 @@
             this.fitToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.counterClockwiseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.flipYToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -132,7 +137,8 @@
             this.cropToolStripMenuItem,
             this.paintToolStripMenuItem,
             this.filterToolStripMenuItem,
-            this.resizeToolStripMenuItem});
+            this.resizeToolStripMenuItem,
+            this.rotateToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -140,20 +146,20 @@
             // cropToolStripMenuItem
             // 
             this.cropToolStripMenuItem.Name = "cropToolStripMenuItem";
-            this.cropToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.cropToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.cropToolStripMenuItem.Text = "Crop";
             this.cropToolStripMenuItem.Click += new System.EventHandler(this.cropToolStripMenuItem_Click);
             // 
             // paintToolStripMenuItem
             // 
             this.paintToolStripMenuItem.Name = "paintToolStripMenuItem";
-            this.paintToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.paintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.paintToolStripMenuItem.Text = "Paint";
             // 
             // filterToolStripMenuItem
             // 
             this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
-            this.filterToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.filterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.filterToolStripMenuItem.Text = "Filter";
             // 
             // resizeToolStripMenuItem
@@ -161,7 +167,7 @@
             this.resizeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resizeToolStripTextBox1});
             this.resizeToolStripMenuItem.Name = "resizeToolStripMenuItem";
-            this.resizeToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.resizeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.resizeToolStripMenuItem.Text = "Resize by %";
             // 
             // resizeToolStripTextBox1
@@ -198,6 +204,45 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // rotateToolStripMenuItem
+            // 
+            this.rotateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem3,
+            this.counterClockwiseToolStripMenuItem,
+            this.flipToolStripMenuItem,
+            this.flipYToolStripMenuItem});
+            this.rotateToolStripMenuItem.Name = "rotateToolStripMenuItem";
+            this.rotateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rotateToolStripMenuItem.Text = "Rotate";
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(193, 22);
+            this.toolStripMenuItem3.Text = "90° Clockwise";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.rotateToolStripMenuItem_Click);
+            // 
+            // counterClockwiseToolStripMenuItem
+            // 
+            this.counterClockwiseToolStripMenuItem.Name = "counterClockwiseToolStripMenuItem";
+            this.counterClockwiseToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.counterClockwiseToolStripMenuItem.Text = "90° Counter Clockwise";
+            this.counterClockwiseToolStripMenuItem.Click += new System.EventHandler(this.rotateToolStripMenuItem_Click);
+            // 
+            // flipToolStripMenuItem
+            // 
+            this.flipToolStripMenuItem.Name = "flipToolStripMenuItem";
+            this.flipToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.flipToolStripMenuItem.Text = "Flip X";
+            this.flipToolStripMenuItem.Click += new System.EventHandler(this.rotateToolStripMenuItem_Click);
+            // 
+            // flipYToolStripMenuItem
+            // 
+            this.flipYToolStripMenuItem.Name = "flipYToolStripMenuItem";
+            this.flipYToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.flipYToolStripMenuItem.Text = "Flip Y";
+            this.flipYToolStripMenuItem.Click += new System.EventHandler(this.rotateToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -239,6 +284,11 @@
         private System.Windows.Forms.ToolStripMenuItem resizeToolStripMenuItem;
         private System.Windows.Forms.ToolStripTextBox resizeToolStripTextBox1;
         private System.Windows.Forms.ToolStripMenuItem fitToImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rotateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem counterClockwiseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem flipToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem flipYToolStripMenuItem;
     }
 }
 

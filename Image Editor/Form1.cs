@@ -136,7 +136,6 @@ namespace Image_Editor
             {
                 point1 = e.Location;
             }
-
         }
 
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
@@ -151,6 +150,28 @@ namespace Image_Editor
                     resizeToolStripTextBox1.Text = "";
                 }
             }
+        }
+
+        private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            if(item.Text == "90° Clockwise")
+            {
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            }
+            else if (item.Text == "90° Counter Clockwise")
+            {
+                img.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            }
+            else if (item.Text == "Flip X")
+            {
+                img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            }
+            else if (item.Text == "Flip Y")
+            {
+                img.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            }
+            refresh();
         }
         //Tools menubar end
 
