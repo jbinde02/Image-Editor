@@ -16,10 +16,13 @@ namespace Image_Editor
         private Bitmap img = new Bitmap(1,1);
         private string path;
         private Size defaultWindowSize = new Size(940, 560);
+        public Color PaintColor; 
 
         public Form1()
         {
             InitializeComponent();
+            Slider s = new Slider();
+            s.Show();
         }
 
         //File menubar start
@@ -151,6 +154,8 @@ namespace Image_Editor
         {
             pictureBox1.Image = img;
         }
+
+
 
         //Call this whenever changes are made to the image
         private void refresh()
