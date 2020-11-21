@@ -12,7 +12,6 @@ namespace Image_Editor
 {
     public partial class Form1 : Form
     {
-        private Bitmap originalImg = new Bitmap(1,1);
         private Bitmap img = new Bitmap(1,1);
         private string path;
         private Point point1, point2; //Mouse locations janky solution
@@ -30,7 +29,6 @@ namespace Image_Editor
             {
                 try
                 {
-                    originalImg = new Bitmap(openFileDialog1.FileName);
                     img = new Bitmap(openFileDialog1.FileName);
                 }
                 catch(Exception exception)
@@ -38,7 +36,6 @@ namespace Image_Editor
                     MessageBox.Show("Invalid File Type\n" + exception.Message);
                     return;
                 }
-                originalImg.Dispose();
                 path = openFileDialog1.FileName;
                 resizePictureBox();
                 pictureBox1.Image = img;
@@ -75,11 +72,6 @@ namespace Image_Editor
             {
                 try
                 {
-                    //If file exist, delete and then resave
-                    if (System.IO.File.Exists(path))
-                    {
-                        System.IO.File.Delete(path);
-                    }
                     imgToSave.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
                     path = saveFileDialog1.FileName;
                 }
@@ -93,7 +85,6 @@ namespace Image_Editor
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            originalImg = null;
             img = null;
             path = null;
             pictureBox1.Image = img;
@@ -135,6 +126,80 @@ namespace Image_Editor
             else
             {
                 point1 = e.Location;
+            }
+        }
+
+        private void filterScalarToolStripTextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            { 
+            float red, green, blue, alpha;
+            float.TryParse(redScalartoolStripTextBox.Text, out red);
+            float.TryParse(greenScalartoolStripTextBox.Text, out green);
+            float.TryParse(blueScalartoolStripTextBox.Text, out blue);
+            float.TryParse(alphaScalartoolStripTextBox.Text, out alpha);
+
+            float[][] colorMatrixElements = {
+                new float[] {red,  0,  0,  0, 0},        // red scaling factor
+                new float[] {0,  green,  0,  0, 0},        // green scaling factor
+                new float[] {0,  0,  blue,  0, 0},        // blue scaling factor
+                new float[] {0,  0,  0,  alpha, 0},        // alpha scaling factor
+                new float[] {0, 0, 0, 0, 1}};
+            var colorMatrix = new System.Drawing.Imaging.ColorMatrix(colorMatrixElements);
+
+            var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
+            imageAtrtributes.SetColorMatrix(colorMatrix);
+
+            var graphics = Graphics.FromImage(img);
+            graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
+            graphics.Dispose();
+            refresh();
+            }
+        }
+
+        private void filterPresetToolStripComboBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                ToolStripComboBox item = (ToolStripComboBox)sender;
+
+                if (item.SelectedItem.Equals("Grayscale")) //Grayscale preset
+                {
+                    float[][] colorMatrixElements = {
+                        new float[] {0.333f, 0.333f, 0.333f,  0, 0},        // red scaling factor
+                        new float[] { 0.333f, 0.333f, 0.333f,  0, 0},        // green scaling factor
+                        new float[] { 0.333f, 0.333f, 0.333f,  0, 0},        // blue scaling factor
+                        new float[] {0,  0,  0,  1, 0},        // alpha scaling factor
+                        new float[] {0, 0, 0, 0, 1}};
+                    var colorMatrix = new System.Drawing.Imaging.ColorMatrix(colorMatrixElements);
+
+                    var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
+                    imageAtrtributes.SetColorMatrix(colorMatrix);
+
+                    var graphics = Graphics.FromImage(img);
+                    graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
+                    graphics.Dispose();
+                    refresh();
+                }
+
+                if (item.SelectedItem.Equals("Invert")) //Invert preset
+                {
+                    float[][] colorMatrixElements = {
+                        new float[] {-1, 0, 0,  0, 0},        // red scaling factor
+                        new float[] { 0, -1, 0,  0, 0},        // green scaling factor
+                        new float[] { 0, 0, -1,  0, 0},        // blue scaling factor
+                        new float[] {0,  0,  0,  1, 0},        // alpha scaling factor
+                        new float[] {1, 1, 1, 0, 1}};
+                    var colorMatrix = new System.Drawing.Imaging.ColorMatrix(colorMatrixElements);
+
+                    var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
+                    imageAtrtributes.SetColorMatrix(colorMatrix);
+
+                    var graphics = Graphics.FromImage(img);
+                    graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
+                    graphics.Dispose();
+                    refresh();
+                }
             }
         }
 
@@ -183,7 +248,7 @@ namespace Image_Editor
 
         private void fitToImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Size = img.Size;
+            this.Size = new Size(img.Width + 100, img.Height + 100);
         }
         //View menubar end
 
