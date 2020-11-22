@@ -148,52 +148,6 @@ namespace Image_Editor
             refresh();
         }
 
-        private void filterPresetToolStripComboBox_KeyUp(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Enter)
-            {
-                ToolStripComboBox item = (ToolStripComboBox)sender;
-
-                if (item.SelectedItem.Equals("Grayscale")) //Grayscale preset
-                {
-                    float[][] colorMatrixElements = {
-                        new float[] {0.333f, 0.333f, 0.333f,  0, 0},        // red scaling factor
-                        new float[] { 0.333f, 0.333f, 0.333f,  0, 0},        // green scaling factor
-                        new float[] { 0.333f, 0.333f, 0.333f,  0, 0},        // blue scaling factor
-                        new float[] {0,  0,  0,  1, 0},        // alpha scaling factor
-                        new float[] {0, 0, 0, 0, 1}};
-                    var colorMatrix = new System.Drawing.Imaging.ColorMatrix(colorMatrixElements);
-
-                    var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
-                    imageAtrtributes.SetColorMatrix(colorMatrix);
-
-                    var graphics = Graphics.FromImage(img);
-                    graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
-                    graphics.Dispose();
-                    refresh();
-                }
-
-                if (item.SelectedItem.Equals("Invert")) //Invert preset
-                {
-                    float[][] colorMatrixElements = {
-                        new float[] {-1, 0, 0,  0, 0},        // red scaling factor
-                        new float[] { 0, -1, 0,  0, 0},        // green scaling factor
-                        new float[] { 0, 0, -1,  0, 0},        // blue scaling factor
-                        new float[] {0,  0,  0,  1, 0},        // alpha scaling factor
-                        new float[] {1, 1, 1, 0, 1}};
-                    var colorMatrix = new System.Drawing.Imaging.ColorMatrix(colorMatrixElements);
-
-                    var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
-                    imageAtrtributes.SetColorMatrix(colorMatrix);
-
-                    var graphics = Graphics.FromImage(img);
-                    graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
-                    graphics.Dispose();
-                    refresh();
-                }
-            }
-        }
-
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.Enter)
