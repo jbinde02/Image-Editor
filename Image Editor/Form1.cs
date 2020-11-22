@@ -129,23 +129,15 @@ namespace Image_Editor
             }
         }
 
-        private void filterScalarToolStripTextBox_KeyUp(object sender, KeyEventArgs e)
+        private void colorMatrixEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
-            { 
-            float red, green, blue, alpha;
-            float.TryParse(redScalartoolStripTextBox.Text, out red);
-            float.TryParse(greenScalartoolStripTextBox.Text, out green);
-            float.TryParse(blueScalartoolStripTextBox.Text, out blue);
-            float.TryParse(alphaScalartoolStripTextBox.Text, out alpha);
+            ColorMatixForm colorMatrixForm = new ColorMatixForm();
+            var colorMatrix = new System.Drawing.Imaging.ColorMatrix();
 
-            float[][] colorMatrixElements = {
-                new float[] {red,  0,  0,  0, 0},        // red scaling factor
-                new float[] {0,  green,  0,  0, 0},        // green scaling factor
-                new float[] {0,  0,  blue,  0, 0},        // blue scaling factor
-                new float[] {0,  0,  0,  alpha, 0},        // alpha scaling factor
-                new float[] {0, 0, 0, 0, 1}};
-            var colorMatrix = new System.Drawing.Imaging.ColorMatrix(colorMatrixElements);
+            if(colorMatrixForm.ShowDialog() == DialogResult.OK)
+            {
+                colorMatrix = colorMatrixForm.colorMatrix;
+            }
 
             var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
             imageAtrtributes.SetColorMatrix(colorMatrix);
@@ -154,7 +146,6 @@ namespace Image_Editor
             graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
             graphics.Dispose();
             refresh();
-            }
         }
 
         private void filterPresetToolStripComboBox_KeyUp(object sender, KeyEventArgs e)
