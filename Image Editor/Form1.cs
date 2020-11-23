@@ -12,9 +12,9 @@ namespace Image_Editor
 {
     public partial class Form1 : Form
     {
-        private Bitmap originalImg = new Bitmap(1,1);
         private Bitmap img = new Bitmap(1,1);
         private string path;
+        private Point point1, point2; //Mouse locations janky solution
         private Size defaultWindowSize = new Size(940, 560);
         public Color PaintColor; 
 
@@ -32,7 +32,6 @@ namespace Image_Editor
             {
                 try
                 {
-                    originalImg = new Bitmap(openFileDialog1.FileName);
                     img = new Bitmap(openFileDialog1.FileName);
                 }
                 catch(Exception exception)
@@ -40,7 +39,6 @@ namespace Image_Editor
                     MessageBox.Show("Invalid File Type\n" + exception.Message);
                     return;
                 }
-                originalImg.Dispose();
                 path = openFileDialog1.FileName;
                 resizePictureBox();
                 pictureBox1.Image = img;
@@ -77,11 +75,6 @@ namespace Image_Editor
             {
                 try
                 {
-                    //If file exist, delete and then resave
-                    if (System.IO.File.Exists(path))
-                    {
-                        System.IO.File.Delete(path);
-                    }
                     imgToSave.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
                     path = saveFileDialog1.FileName;
                 }
@@ -95,7 +88,6 @@ namespace Image_Editor
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            originalImg = null;
             img = null;
             path = null;
             pictureBox1.Image = img;
@@ -111,7 +103,52 @@ namespace Image_Editor
         //Tools menubar start
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            this.Text = this.Text + " - (Crop)";
+            pictureBox1.MouseDown += new MouseEventHandler(Crop);
+        }
+
+        private void Crop(object sender, MouseEventArgs e)
+        {
+            if (!point1.IsEmpty)
+            {
+                point2 = e.Location;
+                if (point1.X > point2.X || point1.Y > point2.Y)
+                {
+                    Point temp = point1;
+                    point1 = point2;
+                    point2 = temp;
+                }
+                Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
+                img = img.Clone(rectangle, img.PixelFormat);
+                refresh();
+                pictureBox1.MouseDown -= Crop;
+                point1 = new Point(0, 0);
+                point2 = new Point(0, 0);
+                this.Text = "Image Editor";
+            }
+            else
+            {
+                point1 = e.Location;
+            }
+        }
+
+        private void colorMatrixEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorMatixForm colorMatrixForm = new ColorMatixForm();
+            var colorMatrix = new System.Drawing.Imaging.ColorMatrix();
+
+            if(colorMatrixForm.ShowDialog() == DialogResult.OK)
+            {
+                colorMatrix = colorMatrixForm.colorMatrix;
+            }
+
+            var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
+            imageAtrtributes.SetColorMatrix(colorMatrix);
+
+            var graphics = Graphics.FromImage(img);
+            graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
+            graphics.Dispose();
+            refresh();
         }
 
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
@@ -127,6 +164,28 @@ namespace Image_Editor
                 }
             }
         }
+
+        private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            if(item.Text == "90° Clockwise")
+            {
+                img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            }
+            else if (item.Text == "90° Counter Clockwise")
+            {
+                img.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            }
+            else if (item.Text == "Flip X")
+            {
+                img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            }
+            else if (item.Text == "Flip Y")
+            {
+                img.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            }
+            refresh();
+        }
         //Tools menubar end
 
         //View menubar start
@@ -137,7 +196,7 @@ namespace Image_Editor
 
         private void fitToImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Size = img.Size;
+            this.Size = new Size(img.Width + 100, img.Height + 100);
         }
         //View menubar end
 
