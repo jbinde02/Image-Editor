@@ -60,7 +60,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
- EDevelopment
     <Compile Include="Slider.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -70,7 +69,6 @@
     <EmbeddedResource Include="ColorMatixForm.resx">
       <DependentUpon>ColorMatixForm.cs</DependentUpon>
     </EmbeddedResource>
- development
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
