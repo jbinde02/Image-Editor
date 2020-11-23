@@ -16,10 +16,13 @@ namespace Image_Editor
         private string path;
         private Point point1, point2; //Mouse locations janky solution
         private Size defaultWindowSize = new Size(940, 560);
+        public Color PaintColor; 
 
         public Form1()
         {
             InitializeComponent();
+            Slider s = new Slider();
+            s.Show();
         }
 
         //File menubar start
@@ -210,6 +213,8 @@ namespace Image_Editor
         {
             pictureBox1.Image = img;
         }
+
+
 
         //Call this whenever changes are made to the image
         private void refresh()
