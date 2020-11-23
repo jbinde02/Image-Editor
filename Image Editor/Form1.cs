@@ -10,19 +10,24 @@ using System.Windows.Forms;
 
 namespace Image_Editor
 {
+
     public partial class Form1 : Form
     {
         private Bitmap img = new Bitmap(1,1);
         private string path;
         private Point point1, point2; //Mouse locations janky solution
         private Size defaultWindowSize = new Size(940, 560);
-        public Color PaintColor; 
+        public Color PaintColor;
+        public Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
+        Slider s = new Slider();
+
 
         public Form1()
         {
+            
             InitializeComponent();
-            Slider s = new Slider();
-            s.Show();
+            
+            
         }
 
         //File menubar start
@@ -101,12 +106,53 @@ namespace Image_Editor
         //File menubar end
 
         //Tools menubar start
+        private void paintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Text = this.Text + " - (Paint)";
+            
+
+            pictureBox1.MouseDown += new MouseEventHandler(paint_down);
+            pictureBox1.MouseMove += new MouseEventHandler(paint_move);
+            pictureBox1.MouseUp += new MouseEventHandler(paint_up);
+            s.Show();
+        }
+        private void paint_down(object sender, MouseEventArgs e) {
+            this.point1 = e.Location;
+            paintPen.Color = s.get_Color();
+            paintPen.Width = s.getThickness();
+
+        }
+        private void paint_move(object sender, MouseEventArgs e) {
+            int radius = s.getThickness() / 2;
+            if (!point1.IsEmpty)
+            {
+                using (var graphics = Graphics.FromImage(img))
+                {
+                    graphics.DrawLine(paintPen, point1.X, point1.Y, e.Location.X, e.Location.Y);
+                    graphics.FillEllipse(paintPen.Brush, e.Location.X - radius, e.Location.Y - radius,
+                      radius + radius, radius + radius);
+                    //graphics.DrawLine(paintPen, 10, 10, 30, 30);
+                    //MessageBox.Show("yo");
+                }
+                refresh();
+                point1 = e.Location;
+            }
+        }
+        private void paint_up(object sender, MouseEventArgs e) {
+            point1 = new Point(0,0);
+            
+        
+        }
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Text = this.Text + " - (Crop)";
-            pictureBox1.MouseDown += new MouseEventHandler(Crop);
-        }
 
+            pictureBox1.MouseDown += new MouseEventHandler(Crop);
+            
+            
+
+        }
+        
         private void Crop(object sender, MouseEventArgs e)
         {
             if (!point1.IsEmpty)
@@ -213,6 +259,23 @@ namespace Image_Editor
         {
             pictureBox1.Image = img;
         }
+
+        private void thicknessToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void resizeToolStripTextBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toolStripTextBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
 
 
 
