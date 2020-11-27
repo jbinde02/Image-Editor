@@ -115,7 +115,7 @@ namespace Image_Editor
                 cmd.Parameters.AddWithValue("@VerticleResolution", img.VerticalResolution);
                 cmd.Parameters.AddWithValue("@Width", img.Width);
                 cmd.Parameters.AddWithValue("@Height", img.Height);
-                cmd.Parameters.AddWithValue("@FileSize", new System.IO.FileInfo(path).Length);
+                cmd.Parameters.AddWithValue("@FileSize", new System.IO.FileInfo(path).Length * 0.0000009537); //Bytes to MB || 1 Byte = 0.0000009537 MB
                 cmd.Parameters.AddWithValue("@PixelFormat",img.PixelFormat.ToString());
 
                 cmd.Connection = connection;
@@ -172,6 +172,45 @@ namespace Image_Editor
                 }
                 img = new Bitmap(imgToSave);
                 updateDatabase();
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.Show();
+            try
+            {
+                String constr = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Jabbe\\OneDrive\\Documents\\School Work\\CIS 302\\Image Editor\\Image Editor\\ImageEditorDatabase.mdf;Integrated Security=True";
+                var connection = new SqlConnection(constr);
+
+                var cmd = new SqlCommand();
+                cmd.CommandText = @"SELECT * FROM Images WHERE Path = @Path";
+                cmd.Parameters.AddWithValue("@Path", path);
+                cmd.CommandType = CommandType.Text;
+                cmd.Connection = connection;
+
+                connection.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    aboutForm.pathLabel.Text = reader["Path"].ToString();
+                    aboutForm.dateLabel.Text = reader["Date Opened"].ToString();
+                    aboutForm.horizontalResolutionLabel.Text = reader["Horizontal Resolution"].ToString() + " pixels per inch";
+                    aboutForm.verticleResolutionLabel.Text = reader["Verticle Resolution"].ToString() + " pixels per inch";
+                    aboutForm.widthLabel.Text = reader["Width"].ToString() + " pixels";
+                    aboutForm.heightLabel.Text = reader["Height"].ToString() + " pixels";
+                    aboutForm.fileSizeLabel.Text = reader["File Size (MB)"].ToString() + "MB";
+                    aboutForm.pixelFormatLabel.Text = reader["Pixel Format"].ToString();
+                }
+                cmd.Dispose();
+                connection.Close();
+                reader.Close();
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -294,7 +333,7 @@ namespace Image_Editor
             pictureBox1.Size = img.Size;
             if (pictureBox1.Size.Width > this.Size.Width || pictureBox1.Size.Height > this.Size.Height)
             {
-                this.Size = pictureBox1.Size;
+                this.Size = new Size(img.Width + 100, img.Height + 100);
             }
         }
 
