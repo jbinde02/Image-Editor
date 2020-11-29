@@ -15,10 +15,12 @@ namespace Image_Editor
     {
         private Bitmap img = new Bitmap(1,1);
         private string path;
-        private Point point1, point2; //Mouse locations janky solution
+        private Point point1, point2;
         private Size defaultWindowSize = new Size(940, 560);
-        public Color PaintColor; 
-
+        public Color PaintColor;
+        private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
+        
+        DatabaseManager dbManager = new DatabaseManager();
         public Form1()
         {
             InitializeComponent();
@@ -51,40 +53,26 @@ namespace Image_Editor
         {
             openRecentToolStripMenuItem.DropDownItems.Clear();
             ToolStripItem[] recents = new ToolStripMenuItem[5];
-            try
+            int index = 0;
+            using (var connection = new SqlConnection(databasePath))
             {
-                String constr = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Jabbe\\OneDrive\\Documents\\School Work\\CIS 302\\Image Editor\\Image Editor\\ImageEditorDatabase.mdf;Integrated Security=True";
-                var connection = new SqlConnection(constr);
-
-                var cmd = new SqlCommand();
-                cmd.CommandText = @"SELECT TOP " + recents.Length + " * FROM Images ORDER BY [Date Opened] DESC;";
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = connection;
-
-                connection.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                int index = 0;
-                if (reader.HasRows)
+                using (SqlDataReader reader = dbManager.selectRecentRows(connection, 5))
                 {
-                    while (reader.Read())
+                    if (reader != null)
                     {
-                        ToolStripMenuItem tsmi = new ToolStripMenuItem();
-                        tsmi.Size = new System.Drawing.Size(180, 22);
-                        tsmi.Text = reader.GetString(reader.GetOrdinal("Path"));
-                        tsmi.Click += openRecent_Click;
-                        recents[index] = tsmi;
-                        index++;
+                        while (reader.Read())
+                        {
+                            ToolStripMenuItem tsmi = new ToolStripMenuItem();
+                            tsmi.Size = new System.Drawing.Size(180, 22);
+                            tsmi.Text = reader.GetString(reader.GetOrdinal("Path"));
+                            tsmi.Click += openRecent_Click;
+                            recents[index] = tsmi;
+                            index++;
+                        }
                     }
                 }
-                cmd.Dispose();
-                connection.Close();
-                reader.Close();
-                openRecentToolStripMenuItem.DropDownItems.AddRange(recents);
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            openRecentToolStripMenuItem.DropDownItems.AddRange(recents);
         }
 
         private void openRecent_Click(object sender, EventArgs e)
@@ -101,30 +89,30 @@ namespace Image_Editor
         {
             try
             {
-                String constr = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Jabbe\\OneDrive\\Documents\\School Work\\CIS 302\\Image Editor\\Image Editor\\ImageEditorDatabase.mdf;Integrated Security=True";
-                var connection = new SqlConnection(constr);
+                using (var connection = new SqlConnection(databasePath))
+                {
+                    using (var cmd = new SqlCommand())
+                    {
+                        cmd.CommandText = @"IF EXISTS(SELECT * FROM Images WHERE Path = @Path)
+                                            UPDATE Images SET [Date Opened] = @Date, [Horizontal Resolution] = @HorizontalResolution, [Verticle Resolution] = @VerticleResolution, Width = @Width, Height = @Height, [File Size (MB)] = @FileSize, [Pixel Format] = @PixelFormat WHERE Path = @Path
+                                            ELSE
+                                            INSERT INTO Images VALUES (@Path, @Date, @HorizontalResolution, @VerticleResolution, @Width, @Height, @FileSize, @PixelFormat);";
+                        cmd.Parameters.AddWithValue("@Path", path);
+                        cmd.Parameters.AddWithValue("@Date", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@HorizontalResolution", img.HorizontalResolution);
+                        cmd.Parameters.AddWithValue("@VerticleResolution", img.VerticalResolution);
+                        cmd.Parameters.AddWithValue("@Width", img.Width);
+                        cmd.Parameters.AddWithValue("@Height", img.Height);
+                        cmd.Parameters.AddWithValue("@FileSize", new System.IO.FileInfo(path).Length * 0.0000009537); //Bytes to MB || 1 Byte = 0.0000009537 MB
+                        cmd.Parameters.AddWithValue("@PixelFormat",img.PixelFormat.ToString());
 
-                var cmd = new SqlCommand();
-                cmd.CommandText = @"IF EXISTS(SELECT * FROM Images WHERE Path = @Path)
-                                    UPDATE Images SET [Date Opened] = @Date, [Horizontal Resolution] = @HorizontalResolution, [Verticle Resolution] = @VerticleResolution, Width = @Width, Height = @Height, [File Size (MB)] = @FileSize, [Pixel Format] = @PixelFormat WHERE Path = @Path
-                                    ELSE
-                                    INSERT INTO Images VALUES (@Path, @Date, @HorizontalResolution, @VerticleResolution, @Width, @Height, @FileSize, @PixelFormat);";
-                cmd.Parameters.AddWithValue("@Path", path);
-                cmd.Parameters.AddWithValue("@Date", DateTime.Now);
-                cmd.Parameters.AddWithValue("@HorizontalResolution", img.HorizontalResolution);
-                cmd.Parameters.AddWithValue("@VerticleResolution", img.VerticalResolution);
-                cmd.Parameters.AddWithValue("@Width", img.Width);
-                cmd.Parameters.AddWithValue("@Height", img.Height);
-                cmd.Parameters.AddWithValue("@FileSize", new System.IO.FileInfo(path).Length * 0.0000009537); //Bytes to MB || 1 Byte = 0.0000009537 MB
-                cmd.Parameters.AddWithValue("@PixelFormat",img.PixelFormat.ToString());
-
-                cmd.Connection = connection;
-                cmd.CommandType = CommandType.Text;
-                connection.Open();
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
-                connection.Close();
-                openRecentForm_Load(null, null);
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Connection = connection;
+                        connection.Open();
+                        cmd.ExecuteNonQuery();
+                        openRecentForm_Load(null, null);
+                    }
+                }
             }
             catch(Exception ex)
             {
@@ -179,38 +167,25 @@ namespace Image_Editor
         {
             AboutForm aboutForm = new AboutForm();
             aboutForm.Show();
-            try
+            using(var connection = new SqlConnection(databasePath))
             {
-                String constr = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Jabbe\\OneDrive\\Documents\\School Work\\CIS 302\\Image Editor\\Image Editor\\ImageEditorDatabase.mdf;Integrated Security=True";
-                var connection = new SqlConnection(constr);
-
-                var cmd = new SqlCommand();
-                cmd.CommandText = @"SELECT * FROM Images WHERE Path = @Path";
-                cmd.Parameters.AddWithValue("@Path", path);
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = connection;
-
-                connection.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                using (SqlDataReader reader = dbManager.selectRow(connection, path))
                 {
-                    aboutForm.pathLabel.Text = reader["Path"].ToString();
-                    aboutForm.dateLabel.Text = reader["Date Opened"].ToString();
-                    aboutForm.horizontalResolutionLabel.Text = reader["Horizontal Resolution"].ToString() + " pixels per inch";
-                    aboutForm.verticleResolutionLabel.Text = reader["Verticle Resolution"].ToString() + " pixels per inch";
-                    aboutForm.widthLabel.Text = reader["Width"].ToString() + " pixels";
-                    aboutForm.heightLabel.Text = reader["Height"].ToString() + " pixels";
-                    aboutForm.fileSizeLabel.Text = reader["File Size (MB)"].ToString() + "MB";
-                    aboutForm.pixelFormatLabel.Text = reader["Pixel Format"].ToString();
+                    if(reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            aboutForm.pathLabel.Text = reader["Path"].ToString();
+                            aboutForm.dateLabel.Text = reader["Date Opened"].ToString();
+                            aboutForm.horizontalResolutionLabel.Text = reader["Horizontal Resolution"].ToString() + " pixels per inch";
+                            aboutForm.verticleResolutionLabel.Text = reader["Verticle Resolution"].ToString() + " pixels per inch";
+                            aboutForm.widthLabel.Text = reader["Width"].ToString() + " pixels";
+                            aboutForm.heightLabel.Text = reader["Height"].ToString() + " pixels";
+                            aboutForm.fileSizeLabel.Text = reader["File Size (MB)"].ToString() + "MB";
+                            aboutForm.pixelFormatLabel.Text = reader["Pixel Format"].ToString();
+                        }
+                    }
                 }
-                cmd.Dispose();
-                connection.Close();
-                reader.Close();
-
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
         }
 
@@ -273,9 +248,10 @@ namespace Image_Editor
             var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
             imageAtrtributes.SetColorMatrix(colorMatrix);
 
-            var graphics = Graphics.FromImage(img);
-            graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
-            graphics.Dispose();
+            using (var graphics = Graphics.FromImage(img))
+            {
+                graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
+            }
             refresh();
         }
 
