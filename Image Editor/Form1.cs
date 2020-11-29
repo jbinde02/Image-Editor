@@ -72,7 +72,11 @@ namespace Image_Editor
                     }
                 }
             }
-            openRecentToolStripMenuItem.DropDownItems.AddRange(recents);
+            try
+            {
+                openRecentToolStripMenuItem.DropDownItems.AddRange(recents); //Throws an exception if recents contains null. Ignore it
+            }
+            catch{}
         }
 
         private void openRecent_Click(object sender, EventArgs e)
@@ -91,27 +95,8 @@ namespace Image_Editor
             {
                 using (var connection = new SqlConnection(databasePath))
                 {
-                    using (var cmd = new SqlCommand())
-                    {
-                        cmd.CommandText = @"IF EXISTS(SELECT * FROM Images WHERE Path = @Path)
-                                            UPDATE Images SET [Date Opened] = @Date, [Horizontal Resolution] = @HorizontalResolution, [Verticle Resolution] = @VerticleResolution, Width = @Width, Height = @Height, [File Size (MB)] = @FileSize, [Pixel Format] = @PixelFormat WHERE Path = @Path
-                                            ELSE
-                                            INSERT INTO Images VALUES (@Path, @Date, @HorizontalResolution, @VerticleResolution, @Width, @Height, @FileSize, @PixelFormat);";
-                        cmd.Parameters.AddWithValue("@Path", path);
-                        cmd.Parameters.AddWithValue("@Date", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@HorizontalResolution", img.HorizontalResolution);
-                        cmd.Parameters.AddWithValue("@VerticleResolution", img.VerticalResolution);
-                        cmd.Parameters.AddWithValue("@Width", img.Width);
-                        cmd.Parameters.AddWithValue("@Height", img.Height);
-                        cmd.Parameters.AddWithValue("@FileSize", new System.IO.FileInfo(path).Length * 0.0000009537); //Bytes to MB || 1 Byte = 0.0000009537 MB
-                        cmd.Parameters.AddWithValue("@PixelFormat",img.PixelFormat.ToString());
-
-                        cmd.CommandType = CommandType.Text;
-                        cmd.Connection = connection;
-                        connection.Open();
-                        cmd.ExecuteNonQuery();
-                        openRecentForm_Load(null, null);
-                    }
+                    dbManager.insertUpdateDatabase(connection, path, img);
+                    openRecentForm_Load(null, null);
                 }
             }
             catch(Exception ex)
