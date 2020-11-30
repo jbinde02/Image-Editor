@@ -108,6 +108,7 @@ namespace Image_Editor
         //Tools menubar start
         private void paintToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            deleteHandlers();
             this.Text = this.Text + " - (Paint)";
             
 
@@ -133,6 +134,7 @@ namespace Image_Editor
                       radius + radius, radius + radius);
                     //graphics.DrawLine(paintPen, 10, 10, 30, 30);
                     //MessageBox.Show("yo");
+                    
                 }
                 refresh();
                 point1 = e.Location;
@@ -140,11 +142,10 @@ namespace Image_Editor
         }
         private void paint_up(object sender, MouseEventArgs e) {
             point1 = new Point(0,0);
-            
-        
         }
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            deleteHandlers();
             this.Text = this.Text + " - (Crop)";
 
             pictureBox1.MouseDown += new MouseEventHandler(Crop);
@@ -277,8 +278,12 @@ namespace Image_Editor
 
 
 
-
-
+        private void deleteHandlers() {
+            pictureBox1.MouseDown -= new MouseEventHandler(paint_down);
+            pictureBox1.MouseMove -= new MouseEventHandler(paint_move);
+            pictureBox1.MouseUp -= new MouseEventHandler(paint_up);
+        }
+        
         //Call this whenever changes are made to the image
         private void refresh()
         {
