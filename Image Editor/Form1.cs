@@ -20,16 +20,13 @@ namespace Image_Editor
         private Size defaultWindowSize = new Size(940, 560);
         public Color PaintColor;
         public Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
-        Slider s = new Slider();
+        Slider paintSlider = new Slider();
         private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
         DatabaseManager dbManager = new DatabaseManager();
 
         public Form1()
-        {
-            
-            InitializeComponent();
-            
-            
+        {            
+            InitializeComponent();            
         }
 
         //File menubar start
@@ -197,31 +194,25 @@ namespace Image_Editor
         {
             deleteHandlers();
             this.Text = this.Text + " - (Paint)";
-            
-
             pictureBox1.MouseDown += new MouseEventHandler(paint_down);
             pictureBox1.MouseMove += new MouseEventHandler(paint_move);
             pictureBox1.MouseUp += new MouseEventHandler(paint_up);
-            s.Show();
+            paintSlider.Show();
         }
         private void paint_down(object sender, MouseEventArgs e) {
             this.point1 = e.Location;
-            paintPen.Color = s.get_Color();
-            paintPen.Width = s.getThickness();
-
+            paintPen.Color = paintSlider.get_Color();
+            paintPen.Width = paintSlider.getThickness();
         }
         private void paint_move(object sender, MouseEventArgs e) {
-            int radius = s.getThickness() / 2;
+            int radius = paintSlider.getThickness() / 2;
             if (!point1.IsEmpty)
             {
                 using (var graphics = Graphics.FromImage(img))
                 {
                     graphics.DrawLine(paintPen, point1.X, point1.Y, e.Location.X, e.Location.Y);
                     graphics.FillEllipse(paintPen.Brush, e.Location.X - radius, e.Location.Y - radius,
-                      radius + radius, radius + radius);
-                    //graphics.DrawLine(paintPen, 10, 10, 30, 30);
-                    //MessageBox.Show("yo");
-                    
+                                         radius + radius, radius + radius);
                 }
                 refresh();
                 point1 = e.Location;
@@ -234,11 +225,7 @@ namespace Image_Editor
         {
             deleteHandlers();
             this.Text = this.Text + " - (Crop)";
-
             pictureBox1.MouseDown += new MouseEventHandler(Crop);
-            
-            
-
         }
         
         private void Crop(object sender, MouseEventArgs e)
@@ -348,26 +335,13 @@ namespace Image_Editor
         {
             pictureBox1.Image = img;
         }
-
-        private void thicknessToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void resizeToolStripTextBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolStripTextBox1_Click(object sender, EventArgs e)
-        {
-
-        }
         
-        private void deleteHandlers() {
+        private void deleteHandlers()
+        {
             pictureBox1.MouseDown -= new MouseEventHandler(paint_down);
             pictureBox1.MouseMove -= new MouseEventHandler(paint_move);
             pictureBox1.MouseUp -= new MouseEventHandler(paint_up);
+            this.Text = "Image Editor";
         }
         
         //Call this whenever changes are made to the image

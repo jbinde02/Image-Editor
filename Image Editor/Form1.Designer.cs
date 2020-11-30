@@ -183,7 +183,6 @@
             this.resizeToolStripTextBox1.Text = "100";
             this.resizeToolStripTextBox1.ToolTipText = "Resize Factor | Enter a Double";
             this.resizeToolStripTextBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.resizeToolStripTextBox1_KeyUp);
-            this.resizeToolStripTextBox1.Click += new System.EventHandler(this.resizeToolStripTextBox1_Click);
             // 
             // rotateToolStripMenuItem
             // 
