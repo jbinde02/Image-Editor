@@ -199,11 +199,13 @@ namespace Image_Editor
             pictureBox1.MouseUp += new MouseEventHandler(paint_up);
             paintSlider.Show();
         }
+
         private void paint_down(object sender, MouseEventArgs e) {
             this.point1 = e.Location;
             paintPen.Color = paintSlider.get_Color();
             paintPen.Width = paintSlider.getThickness();
         }
+
         private void paint_move(object sender, MouseEventArgs e) {
             int radius = paintSlider.getThickness() / 2;
             if (!point1.IsEmpty)
@@ -218,9 +220,23 @@ namespace Image_Editor
                 point1 = e.Location;
             }
         }
+
         private void paint_up(object sender, MouseEventArgs e) {
             point1 = new Point(0,0);
         }
+
+        private void colorDropperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteHandlers();
+            this.Text = this.Text + " - (Color Dropper)";
+            pictureBox1.MouseDown += new MouseEventHandler(colorDropper);
+        }
+
+        private void colorDropper(object sender, MouseEventArgs e)
+        {
+            paintSlider.updateBackColor(img.GetPixel(e.X, e.Y));
+        }
+
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
             deleteHandlers();
@@ -242,7 +258,7 @@ namespace Image_Editor
                 Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
                 img = img.Clone(rectangle, img.PixelFormat);
                 refresh();
-                pictureBox1.MouseDown -= Crop;
+                deleteHandlers();
                 point1 = new Point(0, 0);
                 point2 = new Point(0, 0);
                 this.Text = "Image Editor";
@@ -338,12 +354,14 @@ namespace Image_Editor
         
         private void deleteHandlers()
         {
-            pictureBox1.MouseDown -= new MouseEventHandler(paint_down);
-            pictureBox1.MouseMove -= new MouseEventHandler(paint_move);
-            pictureBox1.MouseUp -= new MouseEventHandler(paint_up);
+            pictureBox1.MouseDown -= paint_down;
+            pictureBox1.MouseMove -= paint_move;
+            pictureBox1.MouseUp -= paint_up;
+            pictureBox1.MouseDown -= colorDropper;
+            pictureBox1.MouseDown -= Crop;
             this.Text = "Image Editor";
         }
-        
+
         //Call this whenever changes are made to the image
         private void refresh()
         {
