@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,10 +15,12 @@ namespace Image_Editor
     {
         private Bitmap img = new Bitmap(1,1);
         private string path;
-        private Point point1, point2; //Mouse locations janky solution
+        private Point point1, point2;
         private Size defaultWindowSize = new Size(940, 560);
-        public Color PaintColor; 
-
+        public Color PaintColor;
+        private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
+        
+        DatabaseManager dbManager = new DatabaseManager();
         public Form1()
         {
             InitializeComponent();
@@ -42,6 +45,63 @@ namespace Image_Editor
                 path = openFileDialog1.FileName;
                 resizePictureBox();
                 pictureBox1.Image = img;
+                updateDatabase();
+            }
+        }
+
+        private void openRecentForm_Load(object sender, EventArgs e)
+        {
+            openRecentToolStripMenuItem.DropDownItems.Clear();
+            ToolStripItem[] recents = new ToolStripMenuItem[5];
+            int index = 0;
+            using (var connection = new SqlConnection(databasePath))
+            {
+                using (SqlDataReader reader = dbManager.selectRecentRows(connection, 5))
+                {
+                    if (reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            ToolStripMenuItem tsmi = new ToolStripMenuItem();
+                            tsmi.Size = new System.Drawing.Size(180, 22);
+                            tsmi.Text = reader.GetString(reader.GetOrdinal("Path"));
+                            tsmi.Click += openRecent_Click;
+                            recents[index] = tsmi;
+                            index++;
+                        }
+                    }
+                }
+            }
+            try
+            {
+                openRecentToolStripMenuItem.DropDownItems.AddRange(recents); //Throws an exception if recents contains null. Ignore it
+            }
+            catch{}
+        }
+
+        private void openRecent_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
+            img = new Bitmap(tsmi.Text);
+            path = tsmi.Text;
+            resizePictureBox();
+            pictureBox1.Image = img;
+            updateDatabase();
+        }
+
+        private void updateDatabase()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(databasePath))
+                {
+                    dbManager.insertUpdateDatabase(connection, path, img);
+                    openRecentForm_Load(null, null);
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -63,6 +123,7 @@ namespace Image_Editor
                 MessageBox.Show(exception.Message);
             }
             img = new Bitmap(imgToSave);
+            updateDatabase();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -83,6 +144,33 @@ namespace Image_Editor
                     MessageBox.Show(exception.Message);
                 }
                 img = new Bitmap(imgToSave);
+                updateDatabase();
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.Show();
+            using(var connection = new SqlConnection(databasePath))
+            {
+                using (SqlDataReader reader = dbManager.selectRow(connection, path))
+                {
+                    if(reader != null)
+                    {
+                        while (reader.Read())
+                        {
+                            aboutForm.pathLabel.Text = reader["Path"].ToString();
+                            aboutForm.dateLabel.Text = reader["Date Opened"].ToString();
+                            aboutForm.horizontalResolutionLabel.Text = reader["Horizontal Resolution"].ToString() + " pixels per inch";
+                            aboutForm.verticleResolutionLabel.Text = reader["Verticle Resolution"].ToString() + " pixels per inch";
+                            aboutForm.widthLabel.Text = reader["Width"].ToString() + " pixels";
+                            aboutForm.heightLabel.Text = reader["Height"].ToString() + " pixels";
+                            aboutForm.fileSizeLabel.Text = reader["File Size (MB)"].ToString() + "MB";
+                            aboutForm.pixelFormatLabel.Text = reader["Pixel Format"].ToString();
+                        }
+                    }
+                }
             }
         }
 
@@ -145,9 +233,10 @@ namespace Image_Editor
             var imageAtrtributes = new System.Drawing.Imaging.ImageAttributes();
             imageAtrtributes.SetColorMatrix(colorMatrix);
 
-            var graphics = Graphics.FromImage(img);
-            graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
-            graphics.Dispose();
+            using (var graphics = Graphics.FromImage(img))
+            {
+                graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
+            }
             refresh();
         }
 
@@ -205,7 +294,7 @@ namespace Image_Editor
             pictureBox1.Size = img.Size;
             if (pictureBox1.Size.Width > this.Size.Width || pictureBox1.Size.Height > this.Size.Height)
             {
-                this.Size = pictureBox1.Size;
+                this.Size = new Size(img.Width + 100, img.Height + 100);
             }
         }
 
@@ -213,8 +302,6 @@ namespace Image_Editor
         {
             pictureBox1.Image = img;
         }
-
-
 
         //Call this whenever changes are made to the image
         private void refresh()
