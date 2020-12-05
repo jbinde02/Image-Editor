@@ -1,6 +1,6 @@
 ﻿namespace Image_Editor
 {
-    partial class Slider
+    partial class ColorSliderForm
     {
         /// <summary>
         /// Required designer variable.
@@ -103,7 +103,6 @@
             this.label3.Size = new System.Drawing.Size(19, 17);
             this.label3.TabIndex = 6;
             this.label3.Text = "G";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // label4
             // 
@@ -123,7 +122,7 @@
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(225, 45);
             this.trackBar1.TabIndex = 8;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll_1);
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // Slider
             // 
@@ -140,7 +139,6 @@
             this.Controls.Add(this.trackBar2);
             this.Name = "Slider";
             this.Text = "Paint Tool Color";
-            this.Load += new System.EventHandler(this.Slider_Load);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar4)).EndInit();
