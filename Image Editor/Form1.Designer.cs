@@ -41,6 +41,7 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.paintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colorDropperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resizeToolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
@@ -54,7 +55,8 @@
             this.fitToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.colorDropperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.stampToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -144,9 +146,11 @@
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cropToolStripMenuItem,
-            this.paintToolStripMenuItem,
             this.filterToolStripMenuItem,
+            this.stampToolStripMenuItem,
+            this.paintToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.cropToolStripMenuItem,
             this.resizeToolStripMenuItem,
             this.rotateToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
@@ -168,6 +172,13 @@
             this.paintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.paintToolStripMenuItem.Text = "Paint";
             this.paintToolStripMenuItem.Click += new System.EventHandler(this.paintToolStripMenuItem_Click);
+            // 
+            // colorDropperToolStripMenuItem
+            // 
+            this.colorDropperToolStripMenuItem.Name = "colorDropperToolStripMenuItem";
+            this.colorDropperToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.colorDropperToolStripMenuItem.Text = "Color Dropper";
+            this.colorDropperToolStripMenuItem.Click += new System.EventHandler(this.colorDropperToolStripMenuItem_Click);
             // 
             // filterToolStripMenuItem
             // 
@@ -260,12 +271,17 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // colorDropperToolStripMenuItem
+            // toolStripSeparator1
             // 
-            this.colorDropperToolStripMenuItem.Name = "colorDropperToolStripMenuItem";
-            this.colorDropperToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.colorDropperToolStripMenuItem.Text = "Color Dropper";
-            this.colorDropperToolStripMenuItem.Click += new System.EventHandler(this.colorDropperToolStripMenuItem_Click);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // stampToolStripMenuItem
+            // 
+            this.stampToolStripMenuItem.Name = "stampToolStripMenuItem";
+            this.stampToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.stampToolStripMenuItem.Text = "Stamp";
+            this.stampToolStripMenuItem.Click += new System.EventHandler(this.stampToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -315,6 +331,8 @@
         private System.Windows.Forms.ToolStripMenuItem flipYToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem colorDropperToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stampToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 

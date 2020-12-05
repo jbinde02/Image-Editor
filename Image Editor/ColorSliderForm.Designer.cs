@@ -1,6 +1,6 @@
 ﻿namespace Image_Editor
 {
-    partial class Slider
+    partial class ColorSliderForm
     {
         /// <summary>
         /// Required designer variable.
