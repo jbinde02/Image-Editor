@@ -18,12 +18,12 @@ namespace Image_Editor
         private string path;
         private Point point1, point2;
         private Size defaultWindowSize = new Size(940, 560);
-        public Color PaintColor;
-        public Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
-        ColorSliderForm paintSlider = new ColorSliderForm();
+        private Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
+        private ColorSliderForm paintSlider = new ColorSliderForm();
         private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
-        DatabaseManager dbManager = new DatabaseManager();
-        List<Bitmap> pastImages = new List<Bitmap>();
+        private DatabaseManager dbManager = new DatabaseManager();
+        private Bitmap stampedImg;
+        private List<Bitmap> pastImages = new List<Bitmap>();
 
         public Form1()
         {            
@@ -49,8 +49,7 @@ namespace Image_Editor
                 pictureBox1.Image = img;
                 updateDatabase();
                 refreshSave();
-            }
-            
+            }           
         }
 
         private void openRecentForm_Load(object sender, EventArgs e)
@@ -201,11 +200,13 @@ namespace Image_Editor
             pictureBox1.MouseUp += new MouseEventHandler(paint_up);
             paintSlider.Show();
         }
+
         private void paint_down(object sender, MouseEventArgs e) {
             this.point1 = e.Location;
             paintPen.Color = paintSlider.get_Color();
             paintPen.Width = paintSlider.getThickness();
         }
+
         private void paint_move(object sender, MouseEventArgs e) {
             int radius = paintSlider.getThickness() / 2;
             if (!point1.IsEmpty)
@@ -220,14 +221,83 @@ namespace Image_Editor
                 point1 = e.Location;
             }
         }
+
         private void paint_up(object sender, MouseEventArgs e) {
             point1 = new Point(0,0);
             refreshSave();
         }
+
+        private void colorDropperToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteHandlers();
+            this.Text = this.Text + " - (Color Dropper)";
+            pictureBox1.MouseDown += new MouseEventHandler(colorDropper);
+        }
+
+        private void colorDropper(object sender, MouseEventArgs e)
+        {
+            paintSlider.updateBackColor(img.GetPixel(e.X, e.Y));
+        }
+
+        private void stampToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteHandlers();
+            this.Text = this.Text + " - (Stamp) Click twice in picture";
+            pictureBox1.MouseDown += new MouseEventHandler(Stamp);
+        }
+
+        private void Stamp(object sender, MouseEventArgs e)
+        {
+            if (!point1.IsEmpty)
+            {
+                if (!point2.IsEmpty)
+                {
+                    using(var graphics = Graphics.FromImage(img))
+                    {
+                        graphics.DrawImage(stampedImg, e.Location);
+                        refreshSave();
+                    }
+                    return;
+                }
+                point2 = e.Location;
+                if (point1.X > point2.X || point1.Y > point2.Y)
+                {
+                    Point temp = point1;
+                    point1 = point2;
+                    point2 = temp;
+                }
+                Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
+                stampedImg = img.Clone(rectangle, img.PixelFormat);
+
+                //Creates a new form with that shows the stamped image. When this new form is closed, the stamp tool is disabled
+                Form stampForm = new Form();
+                stampForm.Text = "Stamped Image - Close this to stop stamping";
+                PictureBox stampPictureBox = new PictureBox();
+                stampPictureBox.Image = stampedImg;
+                stampPictureBox.Size = stampedImg.Size;
+                stampForm.Size = new Size(stampPictureBox.Size.Width + 75, stampPictureBox.Size.Height + 75);
+                stampForm.Controls.Add(stampPictureBox);
+                stampForm.FormClosing += new FormClosingEventHandler(stampForm_Closing);
+                stampForm.Show();
+            }
+            else
+            {
+                point1 = e.Location;
+            }
+        }
+
+        private void stampForm_Closing(Object sender, FormClosingEventArgs e)
+        {
+            deleteHandlers();
+            stampedImg = null;
+            point1 = new Point(0, 0);
+            point2 = new Point(0, 0);
+        }
+
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
             deleteHandlers();
-            this.Text = this.Text + " - (Crop)";
+            this.Text = this.Text + " - (Crop) Click twice in picture";
             pictureBox1.MouseDown += new MouseEventHandler(Crop);
         }
         
@@ -245,7 +315,7 @@ namespace Image_Editor
                 Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
                 img = img.Clone(rectangle, img.PixelFormat);
                 refresh();
-                pictureBox1.MouseDown -= Crop;
+                deleteHandlers();
                 point1 = new Point(0, 0);
                 point2 = new Point(0, 0);
                 this.Text = "Image Editor";
@@ -341,12 +411,15 @@ namespace Image_Editor
         
         private void deleteHandlers()
         {
-            pictureBox1.MouseDown -= new MouseEventHandler(paint_down);
-            pictureBox1.MouseMove -= new MouseEventHandler(paint_move);
-            pictureBox1.MouseUp -= new MouseEventHandler(paint_up);
+            pictureBox1.MouseDown -= paint_down;
+            pictureBox1.MouseMove -= paint_move;
+            pictureBox1.MouseUp -= paint_up;
+            pictureBox1.MouseDown -= colorDropper;
+            pictureBox1.MouseDown -= Crop;
+            pictureBox1.MouseDown -= Stamp;
             this.Text = "Image Editor";
         }
-        
+
         //Call this whenever changes are made to the image
         private void refresh()
         {
@@ -355,35 +428,25 @@ namespace Image_Editor
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
+        {            
             if (pastImages.Count >= 2)
-            {
-                
+            {               
                 img = pastImages[pastImages.Count-2];
                 pastImages.RemoveAt(pastImages.Count - 1);
-
-
                 refresh();
-            }
-            
+            }           
         }
         
         //Call this to refresh the screen and save the image to the pastImages list
         private void refreshSave() {
-            refresh();
-            
+            refresh();           
             if (pastImages.Count < 15) {
                 pastImages.Add(new Bitmap(img));
             }
             else {
                 pastImages.RemoveAt(0);
                 pastImages.Add(new Bitmap(img));
-
             }
-
-
-
         }
     }
 }
