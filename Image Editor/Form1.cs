@@ -22,6 +22,8 @@ namespace Image_Editor
         private Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
         private ColorSliderForm paintSlider = new ColorSliderForm();
         private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
+        DatabaseManager dbManager = new DatabaseManager();
+        List<Bitmap> pastImages = new List<Bitmap>();
         private DatabaseManager dbManager = new DatabaseManager();
         private Bitmap stampedImg;
 
@@ -48,7 +50,9 @@ namespace Image_Editor
                 resizePictureBox();
                 pictureBox1.Image = img;
                 updateDatabase();
+                refreshSave();
             }
+            
         }
 
         private void openRecentForm_Load(object sender, EventArgs e)
@@ -86,8 +90,7 @@ namespace Image_Editor
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             img = new Bitmap(tsmi.Text);
             path = tsmi.Text;
-            resizePictureBox();
-            pictureBox1.Image = img;
+            refreshSave();
             updateDatabase();
         }
 
@@ -224,6 +227,7 @@ namespace Image_Editor
 
         private void paint_up(object sender, MouseEventArgs e) {
             point1 = new Point(0,0);
+            refreshSave();
         }
 
         private void colorDropperToolStripMenuItem_Click(object sender, EventArgs e)
@@ -342,7 +346,7 @@ namespace Image_Editor
             {
                 graphics.DrawImage(img, new Rectangle(0, 0, img.Width, img.Height), 0, 0, img.Width, img.Height, GraphicsUnit.Pixel, imageAtrtributes);
             }
-            refresh();
+            refreshSave();
         }
 
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
@@ -353,7 +357,7 @@ namespace Image_Editor
                 {
                     ratio = ratio / 100;
                     img = new Bitmap(img, new Size((int)(img.Width * ratio), (int)(img.Height * ratio)));
-                    refresh();
+                    refreshSave();
                     resizeToolStripTextBox1.Text = "";
                 }
             }
@@ -378,7 +382,7 @@ namespace Image_Editor
             {
                 img.RotateFlip(RotateFlipType.RotateNoneFlipY);
             }
-            refresh();
+            refreshSave();
         }
         //Tools menubar end
 
@@ -424,6 +428,38 @@ namespace Image_Editor
         {
             resizePictureBox();
             refreshImage();
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            if (pastImages.Count >= 2)
+            {
+                
+                img = pastImages[pastImages.Count-2];
+                pastImages.RemoveAt(pastImages.Count - 1);
+
+
+                refresh();
+            }
+            
+        }
+        
+        //Call this to refresh the screen and save the image to the pastImages list
+        private void refreshSave() {
+            refresh();
+            
+            if (pastImages.Count < 15) {
+                pastImages.Add(new Bitmap(img));
+            }
+            else {
+                pastImages.RemoveAt(0);
+                pastImages.Add(new Bitmap(img));
+
+            }
+
+
+
         }
     }
 }
