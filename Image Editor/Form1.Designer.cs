@@ -39,10 +39,13 @@
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stampToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.paintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDropperToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.filterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cropToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resizeToolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.rotateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,9 +58,6 @@
             this.fitToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.stampToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -126,13 +126,6 @@
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
@@ -155,23 +148,37 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.filterToolStripMenuItem,
-            this.undoToolStripMenuItem,
             this.stampToolStripMenuItem,
             this.paintToolStripMenuItem,
             this.toolStripSeparator1,
             this.cropToolStripMenuItem,
             this.resizeToolStripMenuItem,
-            this.rotateToolStripMenuItem});
+            this.rotateToolStripMenuItem,
+            this.undoToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
-            // cropToolStripMenuItem
+            // filterToolStripMenuItem
             // 
-            this.cropToolStripMenuItem.Name = "cropToolStripMenuItem";
-            this.cropToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.cropToolStripMenuItem.Text = "Crop";
-            this.cropToolStripMenuItem.Click += new System.EventHandler(this.cropToolStripMenuItem_Click);
+            this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
+            this.filterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.filterToolStripMenuItem.Text = "Filter";
+            this.filterToolStripMenuItem.Click += new System.EventHandler(this.colorMatrixEditorToolStripMenuItem_Click);
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
+            // stampToolStripMenuItem
+            // 
+            this.stampToolStripMenuItem.Name = "stampToolStripMenuItem";
+            this.stampToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.stampToolStripMenuItem.Text = "Stamp";
+            this.stampToolStripMenuItem.Click += new System.EventHandler(this.stampToolStripMenuItem_Click);
             // 
             // paintToolStripMenuItem
             // 
@@ -189,12 +196,17 @@
             this.colorDropperToolStripMenuItem.Text = "Color Dropper";
             this.colorDropperToolStripMenuItem.Click += new System.EventHandler(this.colorDropperToolStripMenuItem_Click);
             // 
-            // filterToolStripMenuItem
+            // toolStripSeparator1
             // 
-            this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
-            this.filterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.filterToolStripMenuItem.Text = "Filter";
-            this.filterToolStripMenuItem.Click += new System.EventHandler(this.colorMatrixEditorToolStripMenuItem_Click);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // cropToolStripMenuItem
+            // 
+            this.cropToolStripMenuItem.Name = "cropToolStripMenuItem";
+            this.cropToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cropToolStripMenuItem.Text = "Crop";
+            this.cropToolStripMenuItem.Click += new System.EventHandler(this.cropToolStripMenuItem_Click);
             // 
             // resizeToolStripMenuItem
             // 
@@ -279,19 +291,6 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // undoToolStripMenuItem
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
-            // 
-            // stampToolStripMenuItem
-            // 
-            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.undoToolStripMenuItem.Text = "Undo";
-            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // Form1
             // 

@@ -18,14 +18,12 @@ namespace Image_Editor
         private string path;
         private Point point1, point2;
         private Size defaultWindowSize = new Size(940, 560);
-        private Color PaintColor;
         private Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
         private ColorSliderForm paintSlider = new ColorSliderForm();
         private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
-        DatabaseManager dbManager = new DatabaseManager();
-        List<Bitmap> pastImages = new List<Bitmap>();
         private DatabaseManager dbManager = new DatabaseManager();
         private Bitmap stampedImg;
+        private List<Bitmap> pastImages = new List<Bitmap>();
 
         public Form1()
         {            
@@ -51,8 +49,7 @@ namespace Image_Editor
                 pictureBox1.Image = img;
                 updateDatabase();
                 refreshSave();
-            }
-            
+            }           
         }
 
         private void openRecentForm_Load(object sender, EventArgs e)
@@ -258,7 +255,7 @@ namespace Image_Editor
                     using(var graphics = Graphics.FromImage(img))
                     {
                         graphics.DrawImage(stampedImg, e.Location);
-                        refresh();
+                        refreshSave();
                     }
                     return;
                 }
@@ -431,35 +428,25 @@ namespace Image_Editor
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
+        {            
             if (pastImages.Count >= 2)
-            {
-                
+            {               
                 img = pastImages[pastImages.Count-2];
                 pastImages.RemoveAt(pastImages.Count - 1);
-
-
                 refresh();
-            }
-            
+            }           
         }
         
         //Call this to refresh the screen and save the image to the pastImages list
         private void refreshSave() {
-            refresh();
-            
+            refresh();           
             if (pastImages.Count < 15) {
                 pastImages.Add(new Bitmap(img));
             }
             else {
                 pastImages.RemoveAt(0);
                 pastImages.Add(new Bitmap(img));
-
             }
-
-
-
         }
     }
 }
