@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace Image_Editor
 {
-    public partial class Slider : Form
+    public partial class ColorSliderForm : Form
     {
         int thickness = 1;
-        public Slider()
+        public ColorSliderForm()
         {
             InitializeComponent();
             this.BackColor = Color.FromArgb(100, 0, 0);

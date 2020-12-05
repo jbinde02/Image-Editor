@@ -20,7 +20,7 @@ namespace Image_Editor
         private Size defaultWindowSize = new Size(940, 560);
         public Color PaintColor;
         public Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
-        Slider paintSlider = new Slider();
+        ColorSliderForm paintSlider = new ColorSliderForm();
         private String databasePath = "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|ImageEditorDatabase.mdf; Initial Catalog=Test; Integrated Security=True";
         DatabaseManager dbManager = new DatabaseManager();
         List<Bitmap> pastImages = new List<Bitmap>();
