@@ -269,7 +269,7 @@ namespace Image_Editor
                 Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
                 stampedImg = img.Clone(rectangle, img.PixelFormat);
 
-                //Creates a new form with that shows the stamped image. When this new form is closed, the stamp tool is disabled
+                //Creates a new form with that shows the stamped image. When this new form is closed, the stamp tool will be disabled
                 Form stampForm = new Form();
                 stampForm.Text = "Stamped Image - Close this to stop stamping";
                 PictureBox stampPictureBox = new PictureBox();
