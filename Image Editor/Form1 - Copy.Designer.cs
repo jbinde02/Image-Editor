@@ -49,6 +49,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.savedImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -61,7 +62,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(197, 463);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             // 
             // menuStrip1
             // 
@@ -143,20 +143,20 @@
             // cropToolStripMenuItem
             // 
             this.cropToolStripMenuItem.Name = "cropToolStripMenuItem";
-            this.cropToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cropToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.cropToolStripMenuItem.Text = "Crop";
             this.cropToolStripMenuItem.Click += new System.EventHandler(this.cropToolStripMenuItem_Click);
             // 
             // paintToolStripMenuItem
             // 
             this.paintToolStripMenuItem.Name = "paintToolStripMenuItem";
-            this.paintToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.paintToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.paintToolStripMenuItem.Text = "Paint";
             // 
             // filterToolStripMenuItem
             // 
             this.filterToolStripMenuItem.Name = "filterToolStripMenuItem";
-            this.filterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.filterToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.filterToolStripMenuItem.Text = "Filter";
             // 
             // resizeToolStripMenuItem
@@ -164,7 +164,7 @@
             this.resizeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resizeToolStripTextBox1});
             this.resizeToolStripMenuItem.Name = "resizeToolStripMenuItem";
-            this.resizeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.resizeToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.resizeToolStripMenuItem.Text = "Resize by %";
             this.resizeToolStripMenuItem.Click += new System.EventHandler(this.resizeToolStripMenuItem_Click);
             // 
@@ -180,7 +180,8 @@
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.defaultWindowSizeToolStripMenuItem,
-            this.fitToImageToolStripMenuItem});
+            this.fitToImageToolStripMenuItem,
+            this.savedImagesToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(44, 20);
             this.toolStripMenuItem1.Text = "View";
@@ -210,6 +211,13 @@
             this.pictureBox2.Size = new System.Drawing.Size(196, 235);
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
+            // 
+            // savedImagesToolStripMenuItem
+            // 
+            this.savedImagesToolStripMenuItem.Name = "savedImagesToolStripMenuItem";
+            this.savedImagesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.savedImagesToolStripMenuItem.Text = "Saved Images";
+            this.savedImagesToolStripMenuItem.Click += new System.EventHandler(this.savedImagesToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -254,6 +262,7 @@
         private System.Windows.Forms.ToolStripTextBox resizeToolStripTextBox1;
         private System.Windows.Forms.ToolStripMenuItem fitToImageToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.ToolStripMenuItem savedImagesToolStripMenuItem;
     }
 }
 
