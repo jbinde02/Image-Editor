@@ -17,6 +17,7 @@ namespace Image_Editor
         private Bitmap img = new Bitmap(1,1);
         private string path;
         private Point point1, point2;
+        private Rectangle rectangle;
         private Size defaultWindowSize = new Size(940, 560);
         private Pen paintPen = new Pen(Color.FromArgb(100, 100, 100));
         private ColorSliderForm paintSlider = new ColorSliderForm();
@@ -297,33 +298,56 @@ namespace Image_Editor
         private void cropToolStripMenuItem_Click(object sender, EventArgs e)
         {
             deleteHandlers();
-            this.Text = this.Text + " - (Crop) Click twice in picture";
-            pictureBox1.MouseDown += new MouseEventHandler(Crop);
+            this.Text = this.Text + " - (Crop) Drag the box the crop the area";
+            pictureBox1.MouseDown += new MouseEventHandler(Crop_Down);
+            pictureBox1.MouseMove += new MouseEventHandler(Crop_Move);
+            pictureBox1.MouseUp += new MouseEventHandler(Crop_Up);
+            pictureBox1.Paint += new PaintEventHandler(drawRectangle);
         }
         
-        private void Crop(object sender, MouseEventArgs e)
+        private void Crop_Down(object sender, MouseEventArgs e)
         {
-            if (!point1.IsEmpty)
+            point1 = e.Location;
+        }
+
+        private void Crop_Move(object sender, MouseEventArgs e)
+        {
+            point2 = e.Location;
+            refresh(); //Causes the picturebox to want to repaint which will trigger picturebox.paint. This will trigger drawRectangle in this case
+        }
+
+        private void Crop_Up(object sender, MouseEventArgs e)
+        {
+            point2 = e.Location;
+            try
             {
-                point2 = e.Location;
-                if (point1.X > point2.X || point1.Y > point2.Y)
-                {
-                    Point temp = point1;
-                    point1 = point2;
-                    point2 = temp;
-                }
-                Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
                 img = img.Clone(rectangle, img.PixelFormat);
-                refresh();
-                deleteHandlers();
-                point1 = new Point(0, 0);
-                point2 = new Point(0, 0);
-                this.Text = "Image Editor";
             }
-            else
+            catch(Exception ex)
             {
-                point1 = e.Location;
+                Console.WriteLine(ex.Message);
             }
+            
+            refresh();
+            point1 = new Point(0, 0);
+            point2 = new Point(0, 0);
+            deleteHandlers();
+        }
+
+        private void setRectangle()
+        {
+            rectangle = new Rectangle();
+            rectangle.X = Math.Min(point1.X, point2.X); // X value set to min for rectangle
+            rectangle.Y = Math.Min(point1.Y, point2.Y); // Y value same
+
+            rectangle.Width = Math.Abs(point1.X - point2.X);
+            rectangle.Height = Math.Abs(point1.Y - point2.Y);
+        }
+
+        private void drawRectangle(object sender, PaintEventArgs e)
+        {
+            setRectangle();
+            e.Graphics.DrawRectangle(Pens.Blue, rectangle);           
         }
 
         private void colorMatrixEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -415,7 +439,10 @@ namespace Image_Editor
             pictureBox1.MouseMove -= paint_move;
             pictureBox1.MouseUp -= paint_up;
             pictureBox1.MouseDown -= colorDropper;
-            pictureBox1.MouseDown -= Crop;
+            pictureBox1.MouseDown -= Crop_Down;
+            pictureBox1.MouseMove -= Crop_Move;
+            pictureBox1.MouseUp -= Crop_Up;
+            pictureBox1.Paint -= drawRectangle;
             pictureBox1.MouseDown -= Stamp;
             this.Text = "Image Editor";
         }
