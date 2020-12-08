@@ -322,7 +322,7 @@ namespace Image_Editor
                 Console.WriteLine(ex.Message);
             }
 
-            refresh();
+            refreshSave();
             point1 = new Point(0, 0);
             point2 = new Point(0, 0);
             deleteHandlers();
