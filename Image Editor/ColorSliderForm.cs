@@ -10,63 +10,57 @@ using System.Windows.Forms;
 
 namespace Image_Editor
 {
-    public partial class Slider : Form
+    public partial class ColorSliderForm : Form
     {
         int thickness = 1;
-        public Slider()
+        public ColorSliderForm()
         {
             InitializeComponent();
             this.BackColor = Color.FromArgb(100, 0, 0);
             trackBar1.Value = 100;
         }
 
-        public void updateBackColor() {
+        public void updateBackColor()
+        {
             this.BackColor = Color.FromArgb(trackBar1.Value, trackBar2.Value, trackBar3.Value);
-
-            
         }
-        public Color get_Color() {
+
+        public void updateBackColor(Color color)
+        {
+            try
+            {
+                this.BackColor = color;
+            }
+            catch{}
+        }
+
+        public Color get_Color()
+        {
             return this.BackColor;
         }
 
-        private void trackBar3_Scroll(object sender, EventArgs e)
+        public int getThickness()
         {
-            updateBackColor();
-        }
-
-        private void trackBar2_Scroll(object sender, EventArgs e)
-        {
-            updateBackColor();
+            return this.thickness;        
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             updateBackColor();
         }
-
-        private void Slider_Load(object sender, EventArgs e)
+        private void trackBar2_Scroll(object sender, EventArgs e)
         {
-
+            updateBackColor();
         }
 
-        private void label3_Click(object sender, EventArgs e)
+        private void trackBar3_Scroll(object sender, EventArgs e)
         {
-
-        }
-        public int getThickness() {
-            return this.thickness;
-        
+            updateBackColor();
         }
         private void trackBar4_Scroll(object sender, EventArgs e)
         {
             label1.Text = trackBar4.Value.ToString();
             this.thickness = trackBar4.Value;
-
-        }
-
-        private void trackBar1_Scroll_1(object sender, EventArgs e)
-        {
-            updateBackColor();
         }
     }
 }
