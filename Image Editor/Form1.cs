@@ -14,7 +14,7 @@ namespace Image_Editor
 
     public partial class Form1 : Form
     {
-        private Bitmap img = new Bitmap(1,1);
+        private Bitmap img = new Bitmap(1, 1);
         private string path;
         private Point point1, point2;
         private Rectangle rectangle;
@@ -27,20 +27,20 @@ namespace Image_Editor
         private List<Bitmap> pastImages = new List<Bitmap>();
 
         public Form1()
-        {            
-            InitializeComponent();            
+        {
+            InitializeComponent();
         }
 
         //File menubar start
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     img = new Bitmap(openFileDialog1.FileName);
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     MessageBox.Show("Invalid File Type\n" + exception.Message);
                     return;
@@ -50,7 +50,7 @@ namespace Image_Editor
                 pictureBox1.Image = img;
                 updateDatabase();
                 refreshSave();
-            }           
+            }
         }
 
         private void openRecentForm_Load(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace Image_Editor
             {
                 openRecentToolStripMenuItem.DropDownItems.AddRange(recents); //Throws an exception if recents contains null. Ignore it
             }
-            catch{}
+            catch { }
         }
 
         private void openRecent_Click(object sender, EventArgs e)
@@ -102,7 +102,7 @@ namespace Image_Editor
                     openRecentForm_Load(null, null);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -142,7 +142,7 @@ namespace Image_Editor
                     imgToSave.Save(saveFileDialog1.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
                     path = saveFileDialog1.FileName;
                 }
-                catch(Exception exception)
+                catch (Exception exception)
                 {
                     MessageBox.Show(exception.Message);
                 }
@@ -155,11 +155,11 @@ namespace Image_Editor
         {
             AboutForm aboutForm = new AboutForm();
             aboutForm.Show();
-            using(var connection = new SqlConnection(databasePath))
+            using (var connection = new SqlConnection(databasePath))
             {
                 using (SqlDataReader reader = dbManager.selectRow(connection, path))
                 {
-                    if(reader != null)
+                    if (reader != null)
                     {
                         while (reader.Read())
                         {
@@ -202,13 +202,15 @@ namespace Image_Editor
             paintSlider.Show();
         }
 
-        private void paint_down(object sender, MouseEventArgs e) {
+        private void paint_down(object sender, MouseEventArgs e)
+        {
             this.point1 = e.Location;
             paintPen.Color = paintSlider.get_Color();
             paintPen.Width = paintSlider.getThickness();
         }
 
-        private void paint_move(object sender, MouseEventArgs e) {
+        private void paint_move(object sender, MouseEventArgs e)
+        {
             int radius = paintSlider.getThickness() / 2;
             if (!point1.IsEmpty)
             {
@@ -223,8 +225,9 @@ namespace Image_Editor
             }
         }
 
-        private void paint_up(object sender, MouseEventArgs e) {
-            point1 = new Point(0,0);
+        private void paint_up(object sender, MouseEventArgs e)
+        {
+            point1 = new Point(0, 0);
             refreshSave();
         }
 
@@ -243,47 +246,38 @@ namespace Image_Editor
         private void stampToolStripMenuItem_Click(object sender, EventArgs e)
         {
             deleteHandlers();
-            this.Text = this.Text + " - (Stamp) Click twice in picture";
-            pictureBox1.MouseDown += new MouseEventHandler(Stamp);
+            this.Text = this.Text + " - (Stamp) Draw rectangle";
+            pictureBox1.MouseDown += new MouseEventHandler(Crop_Down);
+            pictureBox1.MouseMove += new MouseEventHandler(Crop_Move);
+            pictureBox1.MouseUp += new MouseEventHandler(Stamp_Up);
+            pictureBox1.Paint += new PaintEventHandler(DrawRectangle);
         }
 
-        private void Stamp(object sender, MouseEventArgs e)
+        private void Stamp_Up(object sender, MouseEventArgs e)
         {
-            if (!point1.IsEmpty)
-            {
-                if (!point2.IsEmpty)
-                {
-                    using(var graphics = Graphics.FromImage(img))
-                    {
-                        graphics.DrawImage(stampedImg, e.Location);
-                        refreshSave();
-                    }
-                    return;
-                }
-                point2 = e.Location;
-                if (point1.X > point2.X || point1.Y > point2.Y)
-                {
-                    Point temp = point1;
-                    point1 = point2;
-                    point2 = temp;
-                }
-                Rectangle rectangle = new Rectangle(point1, new Size(Math.Abs(point2.X - point1.X), Math.Abs(point2.Y - point1.Y)));
-                stampedImg = img.Clone(rectangle, img.PixelFormat);
+            deleteHandlers();
+            this.Text = this.Text + " - (Stamp) Click image to stamp";
+            stampedImg = img.Clone(rectangle, img.PixelFormat);
+            pictureBox1.MouseDown += new MouseEventHandler(Stamp_Click);
 
-                //Creates a new form with that shows the stamped image. When this new form is closed, the stamp tool will be disabled
-                Form stampForm = new Form();
-                stampForm.Text = "Stamped Image - Close this to stop stamping";
-                PictureBox stampPictureBox = new PictureBox();
-                stampPictureBox.Image = stampedImg;
-                stampPictureBox.Size = stampedImg.Size;
-                stampForm.Size = new Size(stampPictureBox.Size.Width + 75, stampPictureBox.Size.Height + 75);
-                stampForm.Controls.Add(stampPictureBox);
-                stampForm.FormClosing += new FormClosingEventHandler(stampForm_Closing);
-                stampForm.Show();
-            }
-            else
+            //Creates a new form with that shows the stamped image. When this new form is closed, the stamp tool will be disabled
+            Form stampForm = new Form();
+            stampForm.Text = "Stamped Image - Close this to stop stamping";
+            PictureBox stampPictureBox = new PictureBox();
+            stampPictureBox.Image = stampedImg;
+            stampPictureBox.Size = stampedImg.Size;
+            stampForm.Size = new Size(stampPictureBox.Size.Width + 75, stampPictureBox.Size.Height + 75);
+            stampForm.Controls.Add(stampPictureBox);
+            stampForm.FormClosing += new FormClosingEventHandler(stampForm_Closing);
+            stampForm.Show();
+        }
+
+        private void Stamp_Click(object sender, MouseEventArgs e)
+        {
+            using (var graphics = Graphics.FromImage(img))
             {
-                point1 = e.Location;
+                graphics.DrawImage(stampedImg, e.Location);
+                refreshSave();
             }
         }
 
@@ -302,9 +296,9 @@ namespace Image_Editor
             pictureBox1.MouseDown += new MouseEventHandler(Crop_Down);
             pictureBox1.MouseMove += new MouseEventHandler(Crop_Move);
             pictureBox1.MouseUp += new MouseEventHandler(Crop_Up);
-            pictureBox1.Paint += new PaintEventHandler(drawRectangle);
+            pictureBox1.Paint += new PaintEventHandler(DrawRectangle);
         }
-        
+
         private void Crop_Down(object sender, MouseEventArgs e)
         {
             point1 = e.Location;
@@ -323,11 +317,11 @@ namespace Image_Editor
             {
                 img = img.Clone(rectangle, img.PixelFormat);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            
+
             refresh();
             point1 = new Point(0, 0);
             point2 = new Point(0, 0);
@@ -344,10 +338,10 @@ namespace Image_Editor
             rectangle.Height = Math.Abs(point1.Y - point2.Y);
         }
 
-        private void drawRectangle(object sender, PaintEventArgs e)
+        private void DrawRectangle(object sender, PaintEventArgs e)
         {
             setRectangle();
-            e.Graphics.DrawRectangle(Pens.Blue, rectangle);           
+            e.Graphics.DrawRectangle(Pens.Blue, rectangle);
         }
 
         private void colorMatrixEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -355,7 +349,7 @@ namespace Image_Editor
             ColorMatixForm colorMatrixForm = new ColorMatixForm();
             var colorMatrix = new System.Drawing.Imaging.ColorMatrix();
 
-            if(colorMatrixForm.ShowDialog() == DialogResult.OK)
+            if (colorMatrixForm.ShowDialog() == DialogResult.OK)
             {
                 colorMatrix = colorMatrixForm.colorMatrix;
             }
@@ -372,9 +366,9 @@ namespace Image_Editor
 
         private void resizeToolStripTextBox1_KeyUp(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter)
             {
-                if(double.TryParse(resizeToolStripTextBox1.Text, out double ratio))
+                if (double.TryParse(resizeToolStripTextBox1.Text, out double ratio))
                 {
                     ratio = ratio / 100;
                     img = new Bitmap(img, new Size((int)(img.Width * ratio), (int)(img.Height * ratio)));
@@ -387,7 +381,7 @@ namespace Image_Editor
         private void rotateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
-            if(item.Text == "90° Clockwise")
+            if (item.Text == "90° Clockwise")
             {
                 img.RotateFlip(RotateFlipType.Rotate90FlipNone);
             }
@@ -432,7 +426,7 @@ namespace Image_Editor
         {
             pictureBox1.Image = img;
         }
-        
+
         private void deleteHandlers()
         {
             pictureBox1.MouseDown -= paint_down;
@@ -442,8 +436,9 @@ namespace Image_Editor
             pictureBox1.MouseDown -= Crop_Down;
             pictureBox1.MouseMove -= Crop_Move;
             pictureBox1.MouseUp -= Crop_Up;
-            pictureBox1.Paint -= drawRectangle;
-            pictureBox1.MouseDown -= Stamp;
+            pictureBox1.Paint -= DrawRectangle;
+            pictureBox1.MouseUp -= Stamp_Up;
+            pictureBox1.MouseDown -= Stamp_Click;
             this.Text = "Image Editor";
         }
 
@@ -455,22 +450,25 @@ namespace Image_Editor
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
+        {
             if (pastImages.Count >= 2)
-            {               
-                img = pastImages[pastImages.Count-2];
+            {
+                img = pastImages[pastImages.Count - 2];
                 pastImages.RemoveAt(pastImages.Count - 1);
                 refresh();
-            }           
+            }
         }
-        
+
         //Call this to refresh the screen and save the image to the pastImages list
-        private void refreshSave() {
-            refresh();           
-            if (pastImages.Count < 15) {
+        private void refreshSave()
+        {
+            refresh();
+            if (pastImages.Count < 15)
+            {
                 pastImages.Add(new Bitmap(img));
             }
-            else {
+            else
+            {
                 pastImages.RemoveAt(0);
                 pastImages.Add(new Bitmap(img));
             }
