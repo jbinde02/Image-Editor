@@ -247,7 +247,7 @@ namespace Image_Editor
         {
             deleteHandlers();
             this.Text = this.Text + " - (Stamp) Draw rectangle";
-            pictureBox1.MouseDown += new MouseEventHandler(Crop_Down);
+            pictureBox1.MouseDown += new MouseEventHandler(Crop_Down); //Uses the same event as crop since they do the same thing
             pictureBox1.MouseMove += new MouseEventHandler(Crop_Move);
             pictureBox1.MouseUp += new MouseEventHandler(Stamp_Up);
             pictureBox1.Paint += new PaintEventHandler(DrawRectangle);
